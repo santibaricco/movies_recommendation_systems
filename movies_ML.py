@@ -73,6 +73,6 @@ pipe.fit(X_train,y_train)
 
 # Input the: genres, keywords, cast and director, to feed the model and predict a movie based on those parameters
 
-text = ['galaxy space spaceship']
+text = input('Insert genres, keywords, cast and director')
 
-pipe.predict(np.array(text))
+pipe.predict(np.array([text]))
