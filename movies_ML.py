@@ -22,44 +22,45 @@ df['corpus'] = df.genres + ' ' + df.keywords + ' ' + df.cast + ' ' + df.director
 # Create a new dataframe with the x and y variables
 df = df[['corpus','title']].copy()
 
-# Clean the corpus we are working with
+# Clean up the corpus we are working with
  
 porter = PorterStemmer()
 stop = nltk.corpus.stopwords.words("english")
 
-def clean_stop(string):
+def clean_stop(string): # Clean a little bit the stop words
     regex2=r"\d|[^\w\s]" # Deletes signs and numbers 
     string = re.sub(regex2, '', string) 
     return string
 
-stop = [clean_stop(i) for i in stop]
+stop = [clean_stop(i) for i in stop] # New list of stop words (cleaned)
 
-def tokenizer(text):
+def tokenizer(text): # Tokenize the words
     return nltk.word_tokenize(text,"english")
 
-def tokenizer_porter(text):
+def tokenizer_porter(text): # Stem the tokenized words (reduce words to their root)
     return [porter.stem(word) for word in tokenizer(text)]
 
-def preprocessor2(text):
+def preprocessor2(text): # Join back the tokenized and stemmed word to a single string
     return " ".join([w for w in tokenizer_porter(text) if w not in stop])
 
-def clean_string(string):
+def clean_string(string): # Defining a single function to clean the string
     regex = r"\(.*?\)"  # Deletes text in parenthesis
     string = re.sub(regex, '', string) 
     regex2=r"\d|[^\w\s]" # Deletes signs and numbers 
     string = re.sub(regex2, '', string) 
     string = " ".join(string.split()) # Deletes double spaces
-    string = string.lower()
-    string  = preprocessor2(string)
+    string = string.lower() # Lowers the string
+    string  = preprocessor2(string) # Applies the preprocessor to the whole string
     return string
+
+# Apply the cleaning function to the corpus
 
 df['corpus'] = df['corpus'].apply(clean_string)
 
-# Split the data to train the model
+# Set the dependent and independent variables to be used in the model (in this case we do not split the data in train and test)
 
-X_train, X_test, y_train, y_test = train_test_split( df["corpus"].values, df["title"].values, test_size=0.3)
-print ('Train set:', X_train.shape,  y_train.shape)
-print ('Test set:', X_test.shape,  y_test.shape)
+X_train = df.corpus.values
+y_train = df.title.values
 
 # Train the model (Logstic Regression)
 
@@ -72,12 +73,6 @@ pipe.fit(X_train,y_train)
 
 # Input the: genres, keywords, cast and director, to feed the model and predict a movie based on those parameters
 
-
-X_test[0] # testing using Interstellar movie
-
-pipe.predict(np.array([X_test[0]]))
-
-text = ['funny comedy laugh']
+text = ['galaxy space spaceship']
 
 pipe.predict(np.array(text))
-# IMPORTANT => check not to split the dataset, the movies do not repeat it does not make sense to split the data we are losing information

@@ -57,4 +57,3 @@ for element in sorted_similar_movies:
     if i>50:
         break
 
-df.original_title.head(100)
